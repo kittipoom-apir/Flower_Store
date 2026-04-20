@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BU-Flower Shop Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-image: radial-gradient(circle at top, rgba(139,92,246,0.12), transparent 42%), radial-gradient(circle at bottom right, rgba(251,146,60,0.14), transparent 30%); }
+        .glass { backdrop-filter: blur(18px); background-color: rgba(255,255,255,0.72); }
+    </style>
+</head>
+<body class="min-h-screen text-slate-900">
+    <header class="sticky top-0 z-20 border-b border-slate-200/70 bg-white/80 shadow-sm">
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm uppercase tracking-[0.35em] text-orange-500">BU-Flower</p>
+                <h1 class="mt-2 text-3xl font-semibold text-purple-900">ระบบจัดการร้านดอกไม้</h1>
+                <p class="mt-2 max-w-2xl text-sm text-slate-600">จัดการสินค้าและหมวดหมู่ด้วย UI ที่ทันสมัย รองรับมือถือ และใช้งานได้ทั้ง Windows และ PythonAnywhere</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ url_for('flower_new') }}" class="rounded-full bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800">เพิ่มสินค้าใหม่</a>
+                <a href="{{ url_for('category_new') }}" class="rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">เพิ่มหมวดหมู่ใหม่</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        {% if page == 'home' %}
+            <section class="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
+                <div>
+                    <div class="mb-6 rounded-3xl border border-purple-200 bg-white/90 p-6 shadow-xl glass">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm uppercase tracking-[0.24em] text-orange-500">ภาพรวมสินค้า</p>
+                                <h2 class="mt-3 text-2xl font-semibold text-slate-900">สินค้า BU-Flower</h2>
+                            </div>
+                            <div class="grid gap-2 sm:auto-cols-auto sm:grid-flow-col">
+                                <a href="{{ url_for('flower_new') }}" class="rounded-full bg-purple-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-800">เพิ่มสินค้า</a>
+                                <a href="{{ url_for('category_new') }}" class="rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">เพิ่มหมวดหมู่</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                        {% for flower in flowers %}
+                            <article class="group overflow-hidden rounded-[28px] border border-slate-200 bg-white p-5 shadow-lg transition hover:-translate-y-1 hover:shadow-2xl">
+                                <div class="mb-5 overflow-hidden rounded-3xl bg-gradient-to-br from-purple-100 via-white to-orange-100 p-6">
+                                    <div class="h-44 rounded-3xl bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_55%),linear-gradient(135deg,rgba(251,146,60,0.24),rgba(168,85,247,0.16))]"></div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <h3 class="text-xl font-semibold text-slate-900">{{ flower['name'] }}</h3>
+                                        <span class="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-orange-700">{{ flower['category_name'] }}</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2 text-sm text-slate-500">
+                                        <span>ราคา {{ '%.2f' | format(flower['price']) }} บาท</span>
+                                        <span>สต็อก {{ flower['stock'] }}</span>
+                                        <span>สี {{ flower['color'] or 'ไม่ระบุ' }}</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-3 pt-4">
+                                        <a href="{{ url_for('flower_edit', flower_id=flower['id']) }}" class="inline-flex items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100">แก้ไข</a>
+                                        <form action="{{ url_for('flower_delete', flower_id=flower['id']) }}" method="post" class="inline">
+                                            <button type="submit" class="inline-flex items-center justify-center rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">ลบ</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </article>
+                        {% else %}
+                            <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 shadow-sm">
+                                ไม่มีสินค้าที่บันทึกไว้ในขณะนี้
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <aside class="space-y-6">
+                    <div class="rounded-3xl border border-purple-200 bg-white p-6 shadow-lg">
+                        <h3 class="text-lg font-semibold text-slate-900">หมวดหมู่ดอกไม้</h3>
+                        <p class="mt-2 text-sm text-slate-500">จัดการหมวดหมู่และแก้ไขชื่อได้ทันที</p>
+                        <div class="mt-5 space-y-4">
+                            {% for category in categories %}
+                                <div class="rounded-3xl border border-slate-200 bg-purple-50/80 p-4">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-purple-900">{{ category['name'] }}</h4>
+                                            <p class="mt-1 text-sm text-slate-600">{{ category['description'] or 'ไม่มีคำอธิบาย' }}</p>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <a href="{{ url_for('category_edit', category_id=category['id']) }}" class="rounded-full bg-white px-3 py-2 text-xs font-semibold text-purple-700 shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50">แก้ไข</a>
+                                            <form action="{{ url_for('category_delete', category_id=category['id']) }}" method="post">
+                                                <button type="submit" class="rounded-full bg-orange-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-orange-600">ลบ</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center text-slate-500">ยังไม่มีหมวดหมู่ กรุณาเพิ่มหมวดหมู่ก่อน</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </aside>
+            </section>
+        {% elif page == 'flower_form' %}
+            <section class="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white/90 p-8 shadow-xl glass">
+                <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.3em] text-orange-500">จัดการสินค้า</p>
+                        <h2 class="text-3xl font-semibold text-slate-900">{{ 'เพิ่มสินค้าใหม่' if form_type == 'new' else 'แก้ไขสินค้า' }}</h2>
+                    </div>
+                    <a href="{{ url_for('index') }}" class="inline-flex rounded-full bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800">กลับหน้าหลัก</a>
+                </div>
+                <form action="" method="post" class="space-y-6">
+                    <label class="block">
+                        <span class="text-sm font-semibold text-slate-700">ชื่อสินค้า</span>
+                        <input type="text" name="name" value="{{ flower['name'] if flower else '' }}" required class="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100" />
+                    </label>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-slate-700">ราคา (บาท)</span>
+                            <input type="number" name="price" step="0.01" value="{{ flower['price'] if flower else '' }}" required class="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100" />
+                        </label>
+                        <label class="block">
+                            <span class="text-sm font-semibold text-slate-700">สต็อก</span>
+                            <input type="number" name="stock" value="{{ flower['stock'] if flower else '' }}" required class="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100" />
+                        </label>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-slate-700">สี</span>
+                            <input type="text" name="color" value="{{ flower['color'] if flower else '' }}" class="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100" />
+                        </label>
+                        <label class="block">
+                            <span class="text-sm font-semibold text-slate-700">หมวดหมู่</span>
+                            <select name="category_id" required class="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100">
+                                <option value="">เลือกหมวดหมู่</option>
+                                {% for category in categories %}
+                                    <option value="{{ category['id'] }}" {% if flower and flower['category_id'] == category['id'] %}selected{% endif %}>{{ category['name'] }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+                    <div class="flex flex-wrap gap-3 pt-3">
+                        <button type="submit" class="inline-flex items-center justify-center rounded-full bg-purple-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-purple-800">บันทึกข้อมูล</button>
+                        <a href="{{ url_for('index') }}" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">ยกเลิก</a>
+                    </div>
+                </form>
+            </section>
+        {% elif page == 'category_form' %}
+            <section class="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white/90 p-8 shadow-xl glass">
+                <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.3em] text-orange-500">จัดการหมวดหมู่</p>
+                        <h2 class="text-3xl font-semibold text-slate-900">{{ 'เพิ่มหมวดหมู่ใหม่' if form_type == 'new' else 'แก้ไขหมวดหมู่' }}</h2>
+                    </div>
+                    <a href="{{ url_for('index') }}" class="inline-flex rounded-full bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800">กลับหน้าหลัก</a>
+                </div>
+                <form action="" method="post" class="space-y-6">
+                    <label class="block">
+                        <span class="text-sm font-semibold text-slate-700">ชื่อหมวดหมู่</span>
+                        <input type="text" name="name" value="{{ category['name'] if category else '' }}" required class="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100" />
+                    </label>
+                    <label class="block">
+                        <span class="text-sm font-semibold text-slate-700">คำอธิบาย</span>
+                        <textarea name="description" rows="4" class="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100">{{ category['description'] if category else '' }}</textarea>
+                    </label>
+                    <div class="flex flex-wrap gap-3 pt-3">
+                        <button type="submit" class="inline-flex items-center justify-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">บันทึกหมวดหมู่</button>
+                        <a href="{{ url_for('index') }}" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">ยกเลิก</a>
+                    </div>
+                </form>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>
